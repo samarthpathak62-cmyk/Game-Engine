@@ -1,0 +1,46 @@
+; Engine configuration file.
+; Best edited using the Godot Editor UI.
+
+config_version=5
+
+[application]
+
+config/name="GTA Studio - Open World Engine"
+config/description="No-Code GTA 5 Style Open-World Engine Base & Visual City Builder built on Godot 4."
+run/main_scene="res://scenes/main_city.tscn"
+config/features=PackedStringArray("4.3")
+config/icon="res://icon.svg"
+
+[autoload]
+
+GameManager="*res://scripts/core/game_manager.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gta_studio/plugin.cfg")
+
+[global_group]
+
+player="Playable Protagonist Characters"
+vehicles="Drivable Open-World Vehicles"
+npcs="AI Civilian Pedestrians"
+police="Police Pursuit Vehicles"
+missions="GTA Mission Checkpoints"
+
+[physics]
+
+common/physics_ticks_per_second=60
+
+[rendering]
+
+lights_and_shadows/directional_shadow/size=4096
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=2
+anti_aliasing/quality/msaa_3d=1
+environment/defaults/default_clear_color=Color(0.12, 0.14, 0.2, 1)
