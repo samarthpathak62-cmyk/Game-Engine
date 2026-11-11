@@ -2,8 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/vehicles/gta_vehicle.gd" id="1_veh"]
 
-[node name="GoliathSUV" type="VehicleBody3D"]
+[node name="BenefactorG63" type="VehicleBody3D"]
 script = ExtResource("1_veh")
-vehicle_name = "Goliath 4x4"
+vehicle_name = "Benefactor G63 AMG"
 vehicle_preset = 2
-body_color = Color(0.18, 0.42, 0.28, 1)

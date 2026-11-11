@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/sky_environment.gd" id="1_sky"]
 [ext_resource type="Script" path="res://scripts/world/city_prop.gd" id="2_prop"]
@@ -7,255 +7,715 @@
 [ext_resource type="Script" path="res://scripts/world/gta_npc.gd" id="5_npc"]
 [ext_resource type="Script" path="res://scripts/world/mission_marker.gd" id="6_mis"]
 [ext_resource type="Script" path="res://scripts/ui/gta_hud.gd" id="7_hud"]
+[ext_resource type="Script" path="res://scripts/engine/runtime_world_builder.gd" id="8_builder"]
 
 [node name="MainCity" type="Node3D"]
 
 [node name="GTASkyEnvironment" type="WorldEnvironment" parent="."]
 script = ExtResource("1_sky")
 mood_preset = 0
+quality_tier = 1
 
 [node name="GTAHUD" type="CanvasLayer" parent="."]
 script = ExtResource("7_hud")
 
+[node name="RuntimeWorldBuilder" type="Node3D" parent="."]
+script = ExtResource("8_builder")
+
 [node name="CityMap" type="Node3D" parent="."]
 
-[node name="GroundPlaza" type="StaticBody3D" parent="CityMap"]
+[node name="LosSantosTerrain" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0, 0)
 script = ExtResource("2_prop")
 prop_type = 0
-primary_color = Color(0.21, 0.24, 0.2, 1)
-prop_size = Vector3(280, 1, 280)
 
-[node name="CenterCrossroads" type="StaticBody3D" parent="CityMap"]
+[node name="Intersection_1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -70, 0, -70)
 script = ExtResource("2_prop")
 prop_type = 2
-prop_size = Vector3(15.6, 1, 15.6)
+prop_size = Vector3(14, 1, 14)
 
-[node name="RoadNorth1" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 23.8)
+[node name="Intersection_2" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -70, 0, 0)
+script = ExtResource("2_prop")
+prop_type = 2
+prop_size = Vector3(14, 1, 14)
+
+[node name="Intersection_3" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -70, 0, 70)
+script = ExtResource("2_prop")
+prop_type = 2
+prop_size = Vector3(14, 1, 14)
+
+[node name="Intersection_4" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0, -70)
+script = ExtResource("2_prop")
+prop_type = 2
+prop_size = Vector3(14, 1, 14)
+
+[node name="Intersection_5" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0, 0)
+script = ExtResource("2_prop")
+prop_type = 2
+prop_size = Vector3(14, 1, 14)
+
+[node name="Intersection_6" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0, 70)
+script = ExtResource("2_prop")
+prop_type = 2
+prop_size = Vector3(14, 1, 14)
+
+[node name="Intersection_7" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 70, 0, -70)
+script = ExtResource("2_prop")
+prop_type = 2
+prop_size = Vector3(14, 1, 14)
+
+[node name="Intersection_8" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 70, 0, 0)
+script = ExtResource("2_prop")
+prop_type = 2
+prop_size = Vector3(14, 1, 14)
+
+[node name="Intersection_9" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 70, 0, 70)
+script = ExtResource("2_prop")
+prop_type = 2
+prop_size = Vector3(14, 1, 14)
+
+[node name="AvenueNS_1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -70, 0, -105)
 script = ExtResource("2_prop")
 prop_type = 1
-prop_size = Vector3(12, 1, 32)
+prop_size = Vector3(14, 1, 56)
 
-[node name="RoadNorth2" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 55.8)
+[node name="AvenueNS_2" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -70, 0, -35)
 script = ExtResource("2_prop")
 prop_type = 1
-prop_size = Vector3(12, 1, 32)
+prop_size = Vector3(14, 1, 56)
 
-[node name="RoadSouth1" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -23.8)
+[node name="AvenueNS_3" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -70, 0, 35)
 script = ExtResource("2_prop")
 prop_type = 1
-prop_size = Vector3(12, 1, 32)
+prop_size = Vector3(14, 1, 56)
 
-[node name="RoadSouth2" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -55.8)
+[node name="AvenueNS_4" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -70, 0, 105)
 script = ExtResource("2_prop")
 prop_type = 1
-prop_size = Vector3(12, 1, 32)
+prop_size = Vector3(14, 1, 56)
 
-[node name="RoadEast1" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 23.8, 0, 0)
+[node name="AvenueNS_5" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0, -105)
 script = ExtResource("2_prop")
 prop_type = 1
-prop_size = Vector3(12, 1, 32)
+prop_size = Vector3(14, 1, 56)
 
-[node name="RoadEast2" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 55.8, 0, 0)
+[node name="AvenueNS_6" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0, -35)
 script = ExtResource("2_prop")
 prop_type = 1
-prop_size = Vector3(12, 1, 32)
+prop_size = Vector3(14, 1, 56)
 
-[node name="RoadWest1" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -23.8, 0, 0)
+[node name="AvenueNS_7" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0, 35)
 script = ExtResource("2_prop")
 prop_type = 1
-prop_size = Vector3(12, 1, 32)
+prop_size = Vector3(14, 1, 56)
 
-[node name="RoadWest2" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -55.8, 0, 0)
+[node name="AvenueNS_8" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0, 105)
 script = ExtResource("2_prop")
 prop_type = 1
-prop_size = Vector3(12, 1, 32)
+prop_size = Vector3(14, 1, 56)
 
-[node name="MazeBankTower" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0, 24)
+[node name="AvenueNS_9" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 70, 0, -105)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="AvenueNS_10" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 70, 0, -35)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="AvenueNS_11" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 70, 0, 35)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="AvenueNS_12" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 70, 0, 105)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -105, 0, -70)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_2" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -35, 0, -70)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_3" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 35, 0, -70)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_4" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 105, 0, -70)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_5" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -105, 0, 0)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_6" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -35, 0, 0)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_7" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 35, 0, 0)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_8" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 105, 0, 0)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_9" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -105, 0, 70)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_10" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -35, 0, 70)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_11" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 35, 0, 70)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="BoulevardEW_12" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 105, 0, 70)
+script = ExtResource("2_prop")
+prop_type = 1
+prop_size = Vector3(14, 1, 56)
+
+[node name="MazeBankSkyscraper" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 24, 0, 24)
 script = ExtResource("2_prop")
 prop_type = 3
-primary_color = Color(0.2, 0.27, 0.38, 1)
-floors = 14
-prop_size = Vector3(16, 1, 16)
 
-[node name="FIBGlassTower" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, 24)
+[node name="PillboxGlassTower" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 46, 0, 26)
 script = ExtResource("2_prop")
 prop_type = 3
-primary_color = Color(0.14, 0.18, 0.24, 1)
-floors = 11
-prop_size = Vector3(15, 1, 15)
+variant_index = 1
+
+[node name="UnionDepositoryTower" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 26, 0, 48)
+script = ExtResource("2_prop")
+prop_type = 3
+variant_index = 2
+
+[node name="PlazaFountain" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 46, 0, 48)
+script = ExtResource("2_prop")
+prop_type = 8
+variant_index = 2
+
+[node name="FIBHeadquarters" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -26, 0, 25)
+script = ExtResource("2_prop")
+prop_type = 3
+variant_index = 3
+
+[node name="ArcadiusCenter" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -48, 0, 26)
+script = ExtResource("2_prop")
+prop_type = 3
+variant_index = 4
+
+[node name="RichardsMajesticTower" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -28, 0, 48)
+script = ExtResource("2_prop")
+prop_type = 3
+variant_index = 5
+
+[node name="WestCommercialWide" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -48, 0, 48)
+script = ExtResource("2_prop")
+prop_type = 4
+variant_index = 3
 
 [node name="VinewoodGrandHotel" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0, -24)
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 26, 0, -26)
+script = ExtResource("2_prop")
+prop_type = 4
+variant_index = 1
+
+[node name="DowntownShowroomBlock" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 48, 0, -24)
+script = ExtResource("2_prop")
+prop_type = 4
+
+[node name="EclipseApartments" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 26, 0, -48)
+script = ExtResource("2_prop")
+prop_type = 4
+variant_index = 2
+
+[node name="SunsetStorefront1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 48, 0, -48)
+script = ExtResource("2_prop")
+prop_type = 4
+variant_index = 4
+
+[node name="DelPerroHeights" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -26, 0, -26)
+script = ExtResource("2_prop")
+prop_type = 4
+variant_index = 2
+
+[node name="RockfordPlazaBlock" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -48, 0, -25)
+script = ExtResource("2_prop")
+prop_type = 4
+
+[node name="VespucciApartments" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, -26, 0, -48)
+script = ExtResource("2_prop")
+prop_type = 4
+variant_index = 3
+
+[node name="LosSantosCustomsStore" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -48, 0, -48)
+script = ExtResource("2_prop")
+prop_type = 4
+variant_index = 4
+
+[node name="EastSkylineTower1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, 94, 0, 28)
 script = ExtResource("2_prop")
 prop_type = 3
-primary_color = Color(0.34, 0.26, 0.22, 1)
-floors = 9
-prop_size = Vector3(15, 1, 14)
+variant_index = 1
 
-[node name="DelPerroNeonShop" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -20)
+[node name="EastSkylineTower2" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, 94, 0, -28)
+script = ExtResource("2_prop")
+prop_type = 3
+variant_index = 2
+
+[node name="WestSkylineTower1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -94, 0, 28)
+script = ExtResource("2_prop")
+prop_type = 3
+variant_index = 4
+
+[node name="WestBeachHotel" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -94, 0, -28)
 script = ExtResource("2_prop")
 prop_type = 4
-primary_color = Color(0.85, 0.65, 0.48, 1)
-floors = 3
-prop_size = Vector3(13, 1, 11)
+variant_index = 1
 
-[node name="LosSantosCustomsShop" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -38)
+[node name="VinewoodMansionFranklin" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 26, 0, 96)
 script = ExtResource("2_prop")
 prop_type = 4
-primary_color = Color(0.32, 0.38, 0.44, 1)
-floors = 2
-prop_size = Vector3(14, 1, 12)
+variant_index = 5
 
-[node name="BoulevardStuntRamp" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 36)
+[node name="VinewoodMansionMichael" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -26, 0, 96)
+script = ExtResource("2_prop")
+prop_type = 4
+variant_index = 6
+
+[node name="VinewoodHillVilla" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 54, 0, 102)
+script = ExtResource("2_prop")
+prop_type = 4
+variant_index = 5
+
+[node name="CentralBoulevardRamp" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0, 42)
 script = ExtResource("2_prop")
 prop_type = 5
 
-[node name="EastStripMegaRamp" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 38, 0, 0)
+[node name="VespucciBeachRamp" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 0, 0, -112)
 script = ExtResource("2_prop")
 prop_type = 5
 
-[node name="PalmTree1" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, 14)
+[node name="EastHighwayRamp" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 82, 0, 0)
 script = ExtResource("2_prop")
-prop_type = 7
+prop_type = 5
 
-[node name="PalmTree2" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, 14)
-script = ExtResource("2_prop")
-prop_type = 7
-
-[node name="PalmTree3" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, -16)
-script = ExtResource("2_prop")
-prop_type = 7
-
-[node name="PalmTree4" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, -16)
-script = ExtResource("2_prop")
-prop_type = 7
-
-[node name="Streetlight1" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -8.2, 0, 26)
+[node name="Streetlight_1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, 8.8, 0, -50)
 script = ExtResource("2_prop")
 prop_type = 6
 
-[node name="Streetlight2" type="StaticBody3D" parent="CityMap"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8.2, 0, -26)
+[node name="Streetlight_2" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -8.8, 0, -50)
 script = ExtResource("2_prop")
 prop_type = 6
+
+[node name="Streetlight_3" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, 8.8, 0, -20)
+script = ExtResource("2_prop")
+prop_type = 6
+
+[node name="Streetlight_4" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -8.8, 0, -20)
+script = ExtResource("2_prop")
+prop_type = 6
+
+[node name="Streetlight_5" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, 8.8, 0, 20)
+script = ExtResource("2_prop")
+prop_type = 6
+
+[node name="Streetlight_6" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -8.8, 0, 20)
+script = ExtResource("2_prop")
+prop_type = 6
+
+[node name="Streetlight_7" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, 8.8, 0, 50)
+script = ExtResource("2_prop")
+prop_type = 6
+
+[node name="Streetlight_8" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -8.8, 0, 50)
+script = ExtResource("2_prop")
+prop_type = 6
+
+[node name="Streetlight_9" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -50, 0, 8.8)
+script = ExtResource("2_prop")
+prop_type = 6
+variant_index = 1
+
+[node name="Streetlight_10" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -20, 0, 8.8)
+script = ExtResource("2_prop")
+prop_type = 6
+variant_index = 1
+
+[node name="Streetlight_11" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 20, 0, 8.8)
+script = ExtResource("2_prop")
+prop_type = 6
+variant_index = 1
+
+[node name="Streetlight_12" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 50, 0, 8.8)
+script = ExtResource("2_prop")
+prop_type = 6
+variant_index = 1
+
+[node name="TrafficLight_1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 8.8, 0, 8.8)
+script = ExtResource("2_prop")
+prop_type = 8
+
+[node name="TrafficLight_2" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -8.8, 0, -8.8)
+script = ExtResource("2_prop")
+prop_type = 8
+
+[node name="TrafficLight_3" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 78.8, 0, 8.8)
+script = ExtResource("2_prop")
+prop_type = 8
+
+[node name="TrafficLight_4" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -61.2, 0, 8.8)
+script = ExtResource("2_prop")
+prop_type = 8
+
+[node name="LosSantosTree_1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.798636, 0, -0.601815, 0, 1, 0, 0.601815, 0, 0.798636, 11, 0, 14)
+script = ExtResource("2_prop")
+prop_type = 7
+
+[node name="LosSantosTree_2" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.275637, 0, -0.961262, 0, 1, 0, 0.961262, 0, 0.275637, -11, 0, 14)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 1
+
+[node name="LosSantosTree_3" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.358368, 0, -0.93358, 0, 1, 0, 0.93358, 0, -0.358368, 11, 0, -14)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 2
+
+[node name="LosSantosTree_4" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.848048, 0, -0.529919, 0, 1, 0, 0.529919, 0, -0.848048, -11, 0, -14)
+script = ExtResource("2_prop")
+prop_type = 7
+
+[node name="LosSantosTree_5" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.996195, 0, 0.087156, 0, 1, 0, -0.087156, 0, -0.996195, 36, 0, 11)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 2
+
+[node name="LosSantosTree_6" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.743145, 0, 0.669131, 0, 1, 0, -0.669131, 0, -0.743145, -36, 0, 11)
+script = ExtResource("2_prop")
+prop_type = 7
+
+[node name="LosSantosTree_7" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.190809, 0, 0.981627, 0, 1, 0, -0.981627, 0, -0.190809, 36, 0, -11)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 1
+
+[node name="LosSantosTree_8" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.438371, 0, 0.898794, 0, 1, 0, -0.898794, 0, 0.438371, -36, 0, -11)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 2
+
+[node name="LosSantosTree_9" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.891007, 0, 0.45399, 0, 1, 0, -0.45399, 0, 0.891007, -35, 0, -84)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 2
+
+[node name="LosSantosTree_10" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, 0.984808, -15, 0, -84)
+script = ExtResource("2_prop")
+prop_type = 7
+
+[node name="LosSantosTree_11" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.681998, 0, -0.731354, 0, 1, 0, 0.731354, 0, 0.681998, 15, 0, -84)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 2
+
+[node name="LosSantosTree_12" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.104528, 0, -0.994522, 0, 1, 0, 0.994522, 0, 0.104528, 35, 0, -84)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 1
+
+[node name="LosSantosTree_13" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.515038, 0, -0.857167, 0, 1, 0, 0.857167, 0, -0.515038, -55, 0, -84)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 2
+
+[node name="LosSantosTree_14" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.927184, 0, -0.374607, 0, 1, 0, 0.374607, 0, -0.927184, 55, 0, -84)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 2
+
+[node name="LosSantosTree_15" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, -0.965926, 14, 0, 88)
+script = ExtResource("2_prop")
+prop_type = 7
+
+[node name="LosSantosTree_16" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.615661, 0, 0.788011, 0, 1, 0, -0.788011, 0, -0.615661, -14, 0, 88)
+script = ExtResource("2_prop")
+prop_type = 7
+variant_index = 1
+
+[node name="VinewoodBoulder1" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(0.906308, 0, -0.422618, 0, 1, 0, 0.422618, 0, 0.906308, 40, 0, 112)
+script = ExtResource("2_prop")
+prop_type = 8
+variant_index = 3
+
+[node name="VinewoodBoulder2" type="StaticBody3D" parent="CityMap"]
+transform = Transform3D(-0.34202, 0, -0.939693, 0, 1, 0, 0.939693, 0, -0.34202, -42, 0, 115)
+script = ExtResource("2_prop")
+prop_type = 8
+variant_index = 3
 
 [node name="Protagonists" type="Node3D" parent="."]
 
 [node name="Franklin" type="CharacterBody3D" parent="Protagonists"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0.2, -10)
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -3.6, 0.15, -18.0)
 script = ExtResource("3_char")
 character_name = "Franklin"
 protagonist_slot = 0
 is_starting_player = true
-outfit_color = Color(0.16, 0.58, 0.32, 1)
+character_skin = 0
 
 [node name="Michael" type="CharacterBody3D" parent="Protagonists"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 0.2, 12)
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, 18.0, 0.15, 14.0)
 script = ExtResource("3_char")
 character_name = "Michael"
 protagonist_slot = 1
 is_starting_player = false
-outfit_color = Color(0.16, 0.24, 0.42, 1)
+character_skin = 1
 
 [node name="Trevor" type="CharacterBody3D" parent="Protagonists"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 28, 0.2, -8)
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -64.0, 0.15, -22.0)
 script = ExtResource("3_char")
 character_name = "Trevor"
 protagonist_slot = 2
 is_starting_player = false
-outfit_color = Color(0.78, 0.36, 0.16, 1)
+character_skin = 2
 
 [node name="Vehicles" type="Node3D" parent="."]
 
-[node name="InfernusGT" type="VehicleBody3D" parent="Vehicles"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, -8)
+[node name="PegassiSU7" type="VehicleBody3D" parent="Vehicles"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0.0, 0.35, -13.0)
 script = ExtResource("4_veh")
-vehicle_name = "Infernus GT"
+vehicle_name = "Pegassi SU7 GT"
 vehicle_preset = 0
-body_color = Color(0.92, 0.16, 0.18, 1)
 
-[node name="NeonBanshee" type="VehicleBody3D" parent="Vehicles"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 16, 0.35, 4)
+[node name="BenefactorG63" type="VehicleBody3D" parent="Vehicles"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 14.0, 0.38, 3.5)
 script = ExtResource("4_veh")
-vehicle_name = "Banshee Turbo"
-vehicle_preset = 0
-body_color = Color(0.12, 0.68, 0.96, 1)
-
-[node name="GoliathSUV" type="VehicleBody3D" parent="Vehicles"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31, 0.4, -4)
-script = ExtResource("4_veh")
-vehicle_name = "Goliath 4x4"
+vehicle_name = "Benefactor G63 AMG"
 vehicle_preset = 2
-body_color = Color(0.2, 0.44, 0.28, 1)
 
-[node name="LSPDCruiser" type="VehicleBody3D" parent="Vehicles"]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0.35, 3)
+[node name="BravadoDominator" type="VehicleBody3D" parent="Vehicles"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, -66.5, 0.35, -16.0)
 script = ExtResource("4_veh")
-vehicle_name = "LSPD Cruiser"
+vehicle_name = "Bravado Dominator"
+vehicle_preset = 4
+
+[node name="LSPDInterceptor1" type="VehicleBody3D" parent="Vehicles"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -24.0, 0.35, 3.5)
+script = ExtResource("4_veh")
+vehicle_name = "LSPD Interceptor"
 vehicle_preset = 1
-body_color = Color(0.1, 0.12, 0.16, 1)
 police_pursuit_ai = true
 
-[node name="AITrafficTaxi" type="VehicleBody3D" parent="Vehicles"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 0.35, -52)
+[node name="LSPDInterceptor2" type="VehicleBody3D" parent="Vehicles"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, 3.5, 0.35, 82.0)
 script = ExtResource("4_veh")
-vehicle_name = "Los Santos Taxi"
+vehicle_name = "LSPD Highway Unit"
+vehicle_preset = 1
+police_pursuit_ai = true
+
+[node name="DowntownCab1" type="VehicleBody3D" parent="Vehicles"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 3.4, 0.35, -55.0)
+script = ExtResource("4_veh")
+vehicle_name = "Downtown Cab Co."
 vehicle_preset = 3
-body_color = Color(0.95, 0.76, 0.12, 1)
+ai_traffic_mode = true
+
+[node name="TrafficSedan1" type="VehicleBody3D" parent="Vehicles"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -3.4, 0.35, 58.0)
+script = ExtResource("4_veh")
+vehicle_name = "Obey Tailgater"
+vehicle_preset = 5
+ai_traffic_mode = true
+
+[node name="TrafficSUV1" type="VehicleBody3D" parent="Vehicles"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, -52.0, 0.35, -3.4)
+script = ExtResource("4_veh")
+vehicle_name = "Canis Patriot 4x4"
+vehicle_preset = 6
+ai_traffic_mode = true
+
+[node name="CoastalTaxi2" type="VehicleBody3D" parent="Vehicles"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, 48.0, 0.35, -66.6)
+script = ExtResource("4_veh")
+vehicle_name = "Downtown Cab Co."
+vehicle_preset = 3
 ai_traffic_mode = true
 
 [node name="Pedestrians" type="Node3D" parent="."]
 
-[node name="Civilian1" type="CharacterBody3D" parent="Pedestrians"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0.25, -18)
+[node name="Pedestrian1" type="CharacterBody3D" parent="Pedestrians"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 8.2, 0.15, -26.0)
 script = ExtResource("5_npc")
-shirt_color = Color(0.92, 0.42, 0.36, 1)
+npc_skin = 0
 
-[node name="Civilian2" type="CharacterBody3D" parent="Pedestrians"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -6.8, 0.25, 22)
+[node name="Pedestrian2" type="CharacterBody3D" parent="Pedestrians"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -8.2, 0.15, 24.0)
 script = ExtResource("5_npc")
-shirt_color = Color(0.32, 0.68, 0.92, 1)
+npc_skin = 1
 
-[node name="Civilian3" type="CharacterBody3D" parent="Pedestrians"]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 18, 0.25, 6.8)
+[node name="Pedestrian3" type="CharacterBody3D" parent="Pedestrians"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 28.0, 0.15, 8.2)
 script = ExtResource("5_npc")
-shirt_color = Color(0.94, 0.82, 0.24, 1)
+npc_skin = 2
+
+[node name="Pedestrian4" type="CharacterBody3D" parent="Pedestrians"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, -32.0, 0.15, -8.2)
+script = ExtResource("5_npc")
+npc_skin = 3
+
+[node name="Pedestrian5" type="CharacterBody3D" parent="Pedestrians"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 78.2, 0.15, -28.0)
+script = ExtResource("5_npc")
+npc_skin = 0
+
+[node name="Pedestrian6" type="CharacterBody3D" parent="Pedestrians"]
+transform = Transform3D(-1.0, 0, -0.0, 0, 1, 0, 0.0, 0, -1.0, -61.8, 0.15, 22.0)
+script = ExtResource("5_npc")
+npc_skin = 1
+
+[node name="Pedestrian7" type="CharacterBody3D" parent="Pedestrians"]
+transform = Transform3D(0.0, 0, -1.0, 0, 1, 0, 1.0, 0, 0.0, 18.0, 0.15, -78.2)
+script = ExtResource("5_npc")
+npc_skin = 2
+
+[node name="Pedestrian8" type="CharacterBody3D" parent="Pedestrians"]
+transform = Transform3D(0.0, 0, 1.0, 0, 1, 0, -1.0, 0, 0.0, -18.0, 0.15, 78.2)
+script = ExtResource("5_npc")
+npc_skin = 3
 
 [node name="Missions" type="Node3D" parent="."]
 
-[node name="DowntownCheckpoint" type="Area3D" parent="Missions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 18)
+[node name="MazeBoulevardSprint" type="Area3D" parent="Missions"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.1, 22)
 script = ExtResource("6_mis")
-mission_title = "DOWNTOWN WARMUP"
-cash_reward = 1500
+mission_title = "MAZE BANK SPRINT"
+cash_reward = 2500
 
-[node name="StuntJumpLanding" type="Area3D" parent="Missions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 56)
+[node name="SkyscraperStuntBonus" type="Area3D" parent="Missions"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.1, 64)
 script = ExtResource("6_mis")
-mission_title = "INSANE STUNT BONUS"
+mission_title = "INSANE STUNT JUMP"
+cash_reward = 6000
+
+[node name="VespucciBeachRun" type="Area3D" parent="Missions"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.1, -96)
+script = ExtResource("6_mis")
+mission_title = "VESPUCCI COASTAL RUN"
+cash_reward = 4000
+
+[node name="VinewoodHillsDelivery" type="Area3D" parent="Missions"]
+transform = Transform3D(1.0, 0, -0.0, 0, 1, 0, 0.0, 0, 1.0, 0, 0.1, 96)
+script = ExtResource("6_mis")
+mission_title = "VINEWOOD VIP DELIVERY"
 cash_reward = 5000
-
-[node name="EastStripDelivery" type="Area3D" parent="Missions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 54, 0.1, 0)
-script = ExtResource("6_mis")
-mission_title = "SUNSET STRIP RUN"
-cash_reward = 3500
