@@ -12,17 +12,18 @@ const GTANPCScript = preload("res://scripts/world/gta_npc.gd")
 const MissionMarkerScript = preload("res://scripts/world/mission_marker.gd")
 
 const CATALOG: Array[Dictionary] = [
-	{"id": "skyscraper", "label": "Skyscraper", "kind": "prop", "ptype": 3, "var": 0},
-	{"id": "modern_tower", "label": "Glass Tower", "kind": "prop", "ptype": 3, "var": 1},
-	{"id": "hotel", "label": "Hotel Block", "kind": "prop", "ptype": 4, "var": 1},
-	{"id": "villa", "label": "Mansion", "kind": "prop", "ptype": 4, "var": 5},
-	{"id": "road", "label": "Road Strip", "kind": "prop", "ptype": 1, "var": 0},
-	{"id": "ramp", "label": "Stunt Ramp", "kind": "prop", "ptype": 5, "var": 0},
-	{"id": "supercar", "label": "SU7 Supercar", "kind": "car", "preset": 0},
-	{"id": "gwagon", "label": "G63 AMG SUV", "kind": "car", "preset": 2},
+	{"id": "skyscraper", "label": "Skyscraper", "kind": "prop", "ptype": 0},
+	{"id": "modern_tower", "label": "Glass Tower", "kind": "prop", "ptype": 1},
+	{"id": "plaza", "label": "Plaza Store", "kind": "prop", "ptype": 4},
+	{"id": "villa", "label": "Mansion", "kind": "prop", "ptype": 6},
+	{"id": "road", "label": "Road Strip", "kind": "prop", "ptype": 9},
+	{"id": "ramp", "label": "Stunt Ramp", "kind": "prop", "ptype": 11},
+	{"id": "supercar", "label": "Zentorno Supercar", "kind": "car", "preset": 6},
+	{"id": "infernus", "label": "Infernus GT", "kind": "car", "preset": 0},
+	{"id": "suv", "label": "Luxury SUV", "kind": "car", "preset": 2},
 	{"id": "police", "label": "Police Car", "kind": "car", "preset": 1},
-	{"id": "npc", "label": "3D Civilian", "kind": "npc", "skin": 0},
-	{"id": "tree", "label": "Lush Tree", "kind": "prop", "ptype": 7, "var": 0},
+	{"id": "npc", "label": "3D Civilian", "kind": "npc"},
+	{"id": "tree", "label": "Lush Tree", "kind": "prop", "ptype": 14},
 	{"id": "mission", "label": "Mission ($)", "kind": "mission"},
 ]
 
@@ -220,9 +221,9 @@ func _instantiate_from_record(rec: Dictionary) -> Node3D:
 		var p := StaticBody3D.new()
 		p.set_script(CityPropScript)
 		p.set("prop_type", int(found["ptype"]))
-		p.set("variant_index", int(found["var"]))
-		if int(found["ptype"]) == 1:
-			p.set("prop_size", Vector3(14.0, 1.0, 36.0))
+		if int(found["ptype"]) == 9:
+			p.set("prop_length", 36.0)
+			p.set("prop_width", 14.0)
 		inst = p
 	elif kind == "car":
 		var v := VehicleBody3D.new()
@@ -234,7 +235,7 @@ func _instantiate_from_record(rec: Dictionary) -> Node3D:
 	elif kind == "npc":
 		var npc := CharacterBody3D.new()
 		npc.set_script(GTANPCScript)
-		npc.set("npc_skin", randi() % 4)
+		npc.set("outfit", randi() % 5)
 		inst = npc
 	elif kind == "mission":
 		var m := Area3D.new()

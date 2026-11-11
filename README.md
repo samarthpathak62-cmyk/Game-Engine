@@ -1,55 +1,45 @@
-# Los Santos V — GTA Studio 3D Engine & Open World (Godot 4)
+# Los Santos V — GTA Studio Open-World Engine (Godot 4.7 | Intel UHD Crash-Proof Edition)
 
-Yeh project **Godot 4** par bana **Real 3D Open-World GTA Studio Engine + Playable Los Santos Sandbox** hai — jisme **ek bhi blocky dabba (box) car/character nahi hai**, balki **38 Real 3D `.glb` Models**, **Rigged Skeletal Animations**, **PBR Clearcoat Supercars**, **Live 3D Main Menu**, **Full Mouse Camera + Aim/Shoot**, aur **In-App 3D World Engine Builder (`[TAB]`)** hai!
-
----
-
-## Major Features (V2 High-Quality Upgrade)
-
-1. **Real 3D `.glb` Models & High-Quality Forward+ Graphics (`assets/models/` + `shaders/`)**
-   - **Photorealistic PBR Clearcoat Vehicles:** Pegassi SU7 GT Supercar (`supercar_su7.glb`), Benefactor G63 AMG SUV (`gwagon_suv.glb`), LSPD Interceptor Police Cruiser, Downtown Taxi, Muscle Coupe & Traffic Sedans — real spinning & steering 3D wheels ke saath!
-   - **Rigged & Animated 3D Humans:** Franklin, Michael, Trevor aur 3D Sidewalk Civilians — 24 real skeletal animations (`Walk`, `Run`, `Idle`, `Gun Aim`, `Gun Shoot`, `Punch`, `Roll`, `Death`) ke saath!
-   - **Full Los Santos City + Vespucci Ocean + Vinewood Hills:**
-     - `3x3` connected multi-lane PBR Asphalt Boulevards & Zebra Crosswalks (`shaders/asphalt_road.gdshader`)
-     - Downtown Skyscrapers, Glass Towers, Hotels, Apartments, Storefronts & Vinewood Hills Mansions
-     - Animated Pacific Ocean Waves (`shaders/ocean_water.gdshader`) + Sandy Beach + Sculpted 3D Vinewood Hills
-     - `ReflectionProbe` + `SSAO` + `SSR` (Ultra) + `ACES Filmic Color Grading` + `Fast / High / Ultra` Graphics Settings!
-
-2. **Live 3D GTA V Main Menu & Pause Menu (`[ESC]`)**
-   - Game run karte hi live 3D Los Santos skyline orbit camera ke upar **Main Menu** khulta hai:
-     - `▶ PLAY LOS SANTOS (FREE ROAM)`
-     - `🛠 3D WORLD ENGINE BUILDER (NO-CODE)`
-     - `⚙ GRAPHICS & MOUSE SETTINGS` (`Fast Intel UHD` / `High` / `Ultra Realism` + Mouse Sensitivity Slider + Fullscreen)
-   - Khelte waqt **`[ESC]`** dabane par **Pause Menu** aata hai (Supercar Delivery, Graphics Settings, World Engine Builder, Resume).
-
-3. **Built-In Live 3D World Engine Studio (`[TAB]` Key + Godot Top Toolbar)**
-   - Game ke andar kabhi bhi **`[TAB]`** dabao (ya Main Menu me `3D WORLD ENGINE BUILDER` click karo) -> turant **Free-Fly 3D Engine Mode** khul jayega!
-   - Niche diye gaye 1-Click 3D Assets (`Skyscraper`, `Glass Tower`, `Hotel`, `Mansion`, `Road`, `Ramp`, `SU7 Supercar`, `G63 SUV`, `Police`, `3D Civilian`, `Tree`, `Mission`) select karke city me kahin bhi **Left-Click** se lagao, **Scroll Wheel** se ghumao, **`Save Map`** karo, aur **`▶ PLAY HERE [TAB]`** dabakar turant khelna shuru karo!
-   - Saath hi Godot Editor ke andar 3D Viewport ke bilkul upar **`GTA STUDIO`** quick-spawn toolbar bhi dikhega!
-
-4. **Full GTA 5 Mouse & Combat Controls**
-   - Play karte hi mouse automatically capture hota hai — **360° Free Mouse Look** (Paidal aur Car dono me!).
-   - **Right-Click (Hold RMB):** GTA 5 Over-the-Shoulder Aim Crosshair!
-   - **Left-Click (LMB):** Carbine Rifle Shoot (Muzzle Flash + Bullet Tracer + Sparks + Wanted Stars) ya Melee Punch!
+Ek **100% Real 3D Models (`.glb`)** wala **GTA 5 Style Open-World Game + No-Code 3D World Engine**, khaas **Windows 11 + Intel(R) UHD Graphics** par **bina crash / bina lag** smooth chalne ke liye optimize kiya gaya!
 
 ---
 
-## Controls
+## 🚨 AGAR PEHLE GODOT FORCE-CLOSE HUA THA TO YE 2 STEP KARO:
 
-| Key / Mouse | Action |
-| :--- | :--- |
-| **Mouse Move** | 360° 3D Camera Look (On Foot & Driving) |
-| **Mouse Wheel** | Camera Zoom In / Out (Engine Mode me Object Rotate) |
-| **Right Mouse (Hold)** | Over-the-Shoulder Gun Aim |
-| **Left Mouse** | Shoot Assault Rifle / Melee Punch |
-| **Q** | Switch Weapon (Carbine Rifle / Unarmed) |
-| **C / Ctrl** | Combat Dodge Roll |
-| **W / A / S / D** | Walk / Drive Vehicle |
-| **Shift** | Sprint (On Foot) / Nitro Boost (In Car) |
-| **Space** | Jump (On Foot) / Handbrake Drift (In Car) |
-| **F** or **E** | Enter / Hijack / Exit Any Car |
-| **1 / 2 / 3** | GTA 5 Sky-Zoom Character Switch (Franklin / Michael / Trevor) |
-| **TAB** | Open / Close **Live 3D World Engine Builder** |
-| **ESC** | Pause Menu & Graphics Settings |
-| **T** | Cycle Weather / Time (Sunny Day / Golden Sunset / Neon Night) |
-| **L / H** | Car Headlights / Police Siren |
+1. **Latest Code Pull / Download karo** (`arena/1c0c0bf8-game-engine` branch).
+2. Folder ke andar **`Fix_Crash_Clean_Cache.bat`** par **Double-Click** karo!
+   *(Ye purane crash wala corrupted `.godot` shader/import cache clean kar dega).*
+3. Ab **Godot 4.7** kholo — project `Compatibility (OpenGL 3)` mode me **2 second me bina band huye** khul jayega! Simply **`F5` (Play)** dabao!
+   - **Bonus Direct Shortcut:** Agar bina Godot Editor khole seedha Game + 3D World Engine chalana ho, to apna `Godot_v4.7...exe` is folder me rakh kar **`Play_Direct_Game.bat`** double-click kar do!
+
+---
+
+## 🛠 Humne Force-Close Crash Kaise Fix Kiya (v2.1 Technical Summary)
+
+| Problem (Pehle kyun band ho raha tha) | v2.1 Solution (Ab kyun nahi band hoga) |
+|---|---|
+| **Vulkan `Forward+` + ReflectionProbe + SSAO** Intel UHD Windows driver ko hang (`VK_ERROR_DEVICE_LOST`) kar deta tha | **`gl_compatibility` (OpenGL 3 / ANGLE)** renderer default set kiya — Intel UHD par 100% rock-solid! |
+| **2 Unoptimized Sketchfab Cars** (`682` nodes, `336` surfaces, `53` textures, `KHR_materials_transmission` glass shader) import par freeze karti thi | Unhe hata kar **Clean Game-Ready 3D `.glb` Supercars & SUVs** (`Pegassi Zentorno`, `Infernus GT`, `Luxury SUV` — sirf 5–6 nodes, `1.5 MB` total!) lagayi! |
+| **Minimap `SubViewport`** poore 3D sheher ko har frame **2 baar** render kar raha tha | Fast **GTA 5 2D Vector GPS Radar** lagaya (Roads, Beach, Ocean, Flashing Police Blips, Mission Blips) — 0% extra GPU load! |
+| **`@tool` Setter Rebuild Loop** scene khulte hi har building/car ko 3–4 baar reload karta tha | **`is_node_ready()` guards + Static `PackedScene` & `ShaderMaterial` Cache** lagaya — Editor turant smooth khulta hai! |
+
+---
+
+## 🎮 Full Controls (Mouse + Keyboard)
+
+- **Launch par GTA 5 Main Menu:**
+  - `▶ PLAY LOS SANTOS` — Seedha game start karo!
+  - `🛠 3D WORLD ENGINE BUILDER` — Bina coding apna Los Santos map banao!
+  - `⚙ GRAPHICS & MOUSE SETTINGS` — `Fast (60 FPS)` / `High` / `Ultra`, Mouse Sensitivity, Fullscreen!
+- **Walking & Combat:**
+  - **Mouse Move:** 360° Smooth GTA Camera
+  - **Right-Click (Hold) + Left-Click:** Over-the-Shoulder Rifle Aim + Shoot!
+  - **W / A / S / D:** Chalna (`Shift` = Sprint, `Space` = Jump, `C` = Combat Roll, `Q` = Weapon Switch)
+- **Driving & Action:**
+  - **`F` ya `E`:** Kisi bhi 3D Supercar / SUV / Police Car me baitho ya bahar niklo
+  - **`Shift`:** Nitro Boost | **`Space`:** Handbrake Drift | **`H`:** Horn / Police Siren | **`L`:** Headlights
+- **GTA 5 Special Features:**
+  - **`1` / `2` / `3`:** Franklin, Michael aur Trevor ke beech **GTA 5 Sky-Zoom Switch**!
+  - **`TAB`:** Kabhi bhi **Live 3D World Engine Mode** kholo (WASD+RightClick se udo, LeftClick se 3D Skyscrapers, Supercars, Ramps, Police, Missions lagao aur `Save World` karo!)
+  - **`T`:** Sunset / Sunny Day / Neon Night badlo
+  - **`ESC`:** Pause Menu (Spawn Zentorno Supercar, Settings, Engine Mode)

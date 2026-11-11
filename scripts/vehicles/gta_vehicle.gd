@@ -1,47 +1,50 @@
 @tool
 extends VehicleBody3D
 class_name GTAVehicle
-## GTAVehicle
-## Real 3D .glb Vehicles (Photorealistic PBR Supercar, Mercedes G63 AMG SUV,
-## LSPD Police Cruiser, Los Santos Taxi, Muscle Coupe, Street Sedan) with
-## 4-Wheel Raycast Suspension, Handbrake Drift, Nitro, Sirens & Full 360° Mouse Camera.
+## GTAVehicle (Intel UHD Crash-Proof Optimized)
+## Uses lightweight 5-node real 3D .glb vehicles with cached PackedScenes,
+## 4-wheel raycast suspension, drift, nitro, sirens & 360° mouse camera.
 
 enum VehiclePreset {
-	SUPERCAR_SU7 = 0,
+	SUPERCAR_GT = 0,
 	POLICE_CRUISER = 1,
-	GWAGON_LUXURY_SUV = 2,
+	LUXURY_SUV = 2,
 	CITY_TAXI = 3,
 	MUSCLE_COUPE = 4,
 	STREET_SEDAN = 5,
-	OFFROAD_SUV = 6,
+	SUPERCAR_RACE = 6,
 }
 
-const MODEL_PATHS: Array[String] = [
-	"res://assets/models/vehicles/supercar_su7.glb",
-	"res://assets/models/vehicles/police_cruiser.glb",
-	"res://assets/models/vehicles/gwagon_suv.glb",
-	"res://assets/models/vehicles/city_taxi.glb",
-	"res://assets/models/vehicles/muscle_coupe.glb",
-	"res://assets/models/vehicles/street_sedan.glb",
-	"res://assets/models/vehicles/offroad_suv.glb",
+const VEHICLE_CONFIGS: Array[Dictionary] = [
+	{"path": "res://assets/models/vehicles/sportscar_gt.glb", "scale": 1.04, "y": 0.02},
+	{"path": "res://assets/models/vehicles/police_cruiser.glb", "scale": 1.08, "y": 0.02},
+	{"path": "res://assets/models/vehicles/offroad_suv.glb", "scale": 1.06, "y": 0.02},
+	{"path": "res://assets/models/vehicles/city_taxi.glb", "scale": 1.06, "y": 0.02},
+	{"path": "res://assets/models/vehicles/muscle_coupe.glb", "scale": 1.14, "y": 0.02},
+	{"path": "res://assets/models/vehicles/street_sedan.glb", "scale": 1.06, "y": 0.02},
+	{"path": "res://assets/models/vehicles/supercar_race.glb", "scale": 1.55, "y": 0.02},
 ]
 
+static var _scene_cache: Dictionary = {}
+
 @export_group("Vehicle Model & Preset")
-@export var vehicle_name: String = "Pegassi SU7 GT"
-@export var vehicle_preset: VehiclePreset = VehiclePreset.SUPERCAR_SU7:
+@export var vehicle_name: String = "Infernus GT"
+@export var vehicle_preset: VehiclePreset = VehiclePreset.SUPERCAR_GT:
 	set(value):
 		vehicle_preset = value
 		_apply_preset_defaults()
-		_rebuild_vehicle()
+		if is_node_ready():
+			_rebuild_vehicle()
 @export var body_color: Color = Color(0.92, 0.16, 0.18)
 @export var custom_car_model: PackedScene:
 	set(value):
 		custom_car_model = value
-		_rebuild_vehicle()
+		if is_node_ready():
+			_rebuild_vehicle()
 
 @export_group("Performance & Drift Sliders")
 @export_range(50.0, 380.0, 5.0) var max_engine_force: float = 175.0
-@export_range(70.0, 300.0, 5.0) var max_speed_kmh: float = 210.0
+@export_range(70.0, 300.0, 5.0) var max_speed_kmh: float = 205.0
 @export_range(0.22, 0.60, 0.02) var steer_limit: float = 0.42
 @export_range(0.9, 3.0, 0.1) var grip_friction: float = 1.75
 @export_range(1.1, 2.5, 0.1) var nitro_multiplier: float = 1.7
@@ -55,7 +58,7 @@ var speed_kmh: float = 0.0
 var nitro_charge: float = 100.0
 var is_boosting: bool = false
 var siren_active: bool = false
-var headlights_on: bool = true
+var headlights_on: bool = false
 
 var _steer_target: float = 0.0
 var _siren_timer: float = 0.0
@@ -70,13 +73,12 @@ var _spring_arm: SpringArm3D = null
 var _camera: Camera3D = null
 var _front_ray: RayCast3D = null
 var _left_ray: RayCast3D = null
-var _right_ray: RayCast3D = null
 var _rear_wheels: Array[VehicleWheel3D] = []
 var _visual_front_wheels: Array[Node3D] = []
 var _visual_all_wheels: Array[Node3D] = []
-var _headlights: Array[SpotLight3D] = []
-var _siren_red_light: OmniLight3D = null
-var _siren_blue_light: OmniLight3D = null
+var _headlight_spot: SpotLight3D = null
+var _siren_bar_red: MeshInstance3D = null
+var _siren_bar_blue: MeshInstance3D = null
 
 
 func _ready() -> void:
@@ -84,7 +86,7 @@ func _ready() -> void:
 	if vehicle_preset == VehiclePreset.POLICE_CRUISER or police_pursuit_ai:
 		add_to_group(&"police")
 
-	mass = 58.0
+	mass = 56.0
 	center_of_mass_mode = RigidBody3D.CENTER_OF_MASS_MODE_CUSTOM
 	center_of_mass = Vector3(0.0, 0.10, 0.0)
 
@@ -131,6 +133,8 @@ func exit_driver() -> void:
 	engine_force = 0.0
 	brake = 2.8
 	is_boosting = false
+	if _headlight_spot != null:
+		_headlight_spot.visible = false
 
 	var exit_pos: Vector3 = global_position + global_transform.basis.x * 2.25 + Vector3(0.0, 0.45, 0.0)
 	var forward_vec: Vector3 = global_transform.basis.z
@@ -175,7 +179,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"interact_vehicle"):
 		exit_driver()
 	elif event.is_action_pressed(&"headlights"):
-		_toggle_headlights()
+		headlights_on = not headlights_on
+		if _headlight_spot != null:
+			_headlight_spot.visible = headlights_on
 	elif event.is_action_pressed(&"horn_siren"):
 		siren_active = not siren_active
 
@@ -185,7 +191,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	speed_kmh = linear_velocity.length() * 3.6
-	_update_siren_lights(delta)
+	_update_siren_visuals(delta)
 	_animate_visual_wheels(delta)
 
 	if not _is_gameplay_active() and current_driver != null:
@@ -299,7 +305,6 @@ func _process_traffic_ai(delta: float) -> void:
 	var front_blocked: bool = _front_ray != null and _front_ray.is_colliding()
 	var left_clear: bool = _left_ray == null or not _left_ray.is_colliding()
 
-	# Keep within city bounds (-145..145) by turning smoothly back toward downtown
 	var out_of_bounds: bool = absf(global_position.x) > 132.0 or absf(global_position.z) > 132.0
 	if out_of_bounds:
 		var to_center: Vector3 = (Vector3.ZERO - global_position).normalized()
@@ -341,56 +346,58 @@ func _set_rear_slip(slip_val: float) -> void:
 			rw.wheel_friction_slip = slip_val
 
 
-func _toggle_headlights() -> void:
-	headlights_on = not headlights_on
-	for light: SpotLight3D in _headlights:
-		if is_instance_valid(light):
-			light.visible = headlights_on
-
-
-func _update_siren_lights(delta: float) -> void:
-	if _siren_red_light == null or _siren_blue_light == null:
+func _update_siren_visuals(delta: float) -> void:
+	if _siren_bar_red == null or _siren_bar_blue == null:
 		return
 	if not siren_active:
-		_siren_red_light.visible = false
-		_siren_blue_light.visible = false
+		_siren_bar_red.visible = false
+		_siren_bar_blue.visible = false
 		return
-	_siren_timer += delta * 9.5
-	var red_phase: bool = sin(_siren_timer) >= 0.0
-	_siren_red_light.visible = red_phase
-	_siren_blue_light.visible = not red_phase
+	_siren_timer += delta * 10.0
+	var red_on: bool = sin(_siren_timer) >= 0.0
+	_siren_bar_red.visible = red_on
+	_siren_bar_blue.visible = not red_on
 
 
 func _apply_preset_defaults() -> void:
 	match vehicle_preset:
-		VehiclePreset.SUPERCAR_SU7:
-			vehicle_name = "Pegassi SU7 GT"
+		VehiclePreset.SUPERCAR_GT:
+			vehicle_name = "Infernus GT"
 			max_engine_force = 185.0
-			max_speed_kmh = 225.0
+			max_speed_kmh = 220.0
 		VehiclePreset.POLICE_CRUISER:
 			vehicle_name = "LSPD Interceptor"
 			max_engine_force = 155.0
 			max_speed_kmh = 180.0
-		VehiclePreset.GWAGON_LUXURY_SUV:
-			vehicle_name = "Benefactor G63 AMG"
-			max_engine_force = 165.0
-			max_speed_kmh = 175.0
+		VehiclePreset.LUXURY_SUV:
+			vehicle_name = "Gallivanter Baller 4x4"
+			max_engine_force = 160.0
+			max_speed_kmh = 170.0
 		VehiclePreset.CITY_TAXI:
 			vehicle_name = "Downtown Cab Co."
 			max_engine_force = 125.0
 			max_speed_kmh = 145.0
 		VehiclePreset.MUSCLE_COUPE:
 			vehicle_name = "Bravado Dominator"
-			max_engine_force = 160.0
+			max_engine_force = 165.0
 			max_speed_kmh = 185.0
 		VehiclePreset.STREET_SEDAN:
 			vehicle_name = "Obey Tailgater"
 			max_engine_force = 130.0
 			max_speed_kmh = 155.0
-		VehiclePreset.OFFROAD_SUV:
-			vehicle_name = "Canis Patriot 4x4"
-			max_engine_force = 145.0
-			max_speed_kmh = 150.0
+		VehiclePreset.SUPERCAR_RACE:
+			vehicle_name = "Zentorno X-Proto"
+			max_engine_force = 195.0
+			max_speed_kmh = 235.0
+
+
+static func _get_cached_scene(res_path: String) -> PackedScene:
+	if _scene_cache.has(res_path):
+		return _scene_cache[res_path] as PackedScene
+	var loaded: PackedScene = load(res_path) as PackedScene
+	if loaded != null:
+		_scene_cache[res_path] = loaded
+	return loaded
 
 
 func _rebuild_vehicle() -> void:
@@ -401,29 +408,48 @@ func _rebuild_vehicle() -> void:
 	_rear_wheels.clear()
 	_visual_front_wheels.clear()
 	_visual_all_wheels.clear()
-	_headlights.clear()
-	_siren_red_light = null
-	_siren_blue_light = null
+	_headlight_spot = null
+	_siren_bar_red = null
+	_siren_bar_blue = null
 
-	var is_suv: bool = vehicle_preset == VehiclePreset.GWAGON_LUXURY_SUV or vehicle_preset == VehiclePreset.OFFROAD_SUV
-	var is_police: bool = vehicle_preset == VehiclePreset.POLICE_CRUISER
-	var wheel_rad: float = 0.38 if is_suv else 0.33
+	var visual_root := Node3D.new()
+	visual_root.set_meta("gta_internal", true)
+	add_child(visual_root, false, Node.INTERNAL_MODE_BACK)
 
-	# Physics Chassis Collision
+	var idx: int = clampi(int(vehicle_preset), 0, VEHICLE_CONFIGS.size() - 1)
+	var cfg: Dictionary = VEHICLE_CONFIGS[idx]
+	var packed: PackedScene = custom_car_model if custom_car_model != null else _get_cached_scene(String(cfg["path"]))
+	var sc: float = 1.0 if custom_car_model != null else float(cfg["scale"])
+	var y_off: float = 0.0 if custom_car_model != null else float(cfg["y"])
+
+	if packed != null:
+		var car_inst: Node3D = packed.instantiate() as Node3D
+		if car_inst != null:
+			car_inst.scale = Vector3(sc, sc, sc)
+			car_inst.position = Vector3(0.0, y_off, 0.0)
+			visual_root.add_child(car_inst)
+			_discover_glb_wheels(car_inst)
+
+	# In Editor mode, only show lightweight 3D car visual — skip physics RIDs, cameras & lights!
+	if Engine.is_editor_hint():
+		return
+
+	var is_suv: bool = vehicle_preset == VehiclePreset.LUXURY_SUV
+	var wheel_rad: float = 0.36 if is_suv else 0.32
+
 	var col := CollisionShape3D.new()
 	col.set_meta("gta_internal", true)
 	var box := BoxShape3D.new()
-	box.size = Vector3(1.88, 1.15, 4.25)
+	box.size = Vector3(1.85, 1.15, 4.15)
 	col.shape = box
-	col.position = Vector3(0.0, 0.72, 0.0)
+	col.position = Vector3(0.0, 0.70, 0.0)
 	add_child(col, false, Node.INTERNAL_MODE_BACK)
 
-	# 4 Physics Raycast VehicleWheel3D nodes (+Z forward)
 	var wheel_defs: Array[Dictionary] = [
-		{"name": "WheelFL", "pos": Vector3(0.86, wheel_rad, 1.32), "steer": true},
-		{"name": "WheelFR", "pos": Vector3(-0.86, wheel_rad, 1.32), "steer": true},
-		{"name": "WheelRL", "pos": Vector3(0.86, wheel_rad, -1.26), "steer": false},
-		{"name": "WheelRR", "pos": Vector3(-0.86, wheel_rad, -1.26), "steer": false},
+		{"name": "WheelFL", "pos": Vector3(0.84, wheel_rad, 1.25), "steer": true},
+		{"name": "WheelFR", "pos": Vector3(-0.84, wheel_rad, 1.25), "steer": true},
+		{"name": "WheelRL", "pos": Vector3(0.84, wheel_rad, -1.22), "steer": false},
+		{"name": "WheelRR", "pos": Vector3(-0.84, wheel_rad, -1.22), "steer": false},
 	]
 
 	for wd: Dictionary in wheel_defs:
@@ -444,65 +470,27 @@ func _rebuild_vehicle() -> void:
 		if not bool(wd["steer"]):
 			_rear_wheels.append(wheel)
 
-	# Real 3D .glb Vehicle Model
-	var visual_root := Node3D.new()
-	visual_root.set_meta("gta_internal", true)
-	add_child(visual_root, false, Node.INTERNAL_MODE_BACK)
+	# Zero-light-cost Unshaded Flashing Police Siren Bars!
+	if vehicle_preset == VehiclePreset.POLICE_CRUISER or police_pursuit_ai:
+		_siren_bar_red = _make_siren_beacon(Color(1.0, 0.15, 0.15), Vector3(0.32, 1.48, -0.1))
+		_siren_bar_blue = _make_siren_beacon(Color(0.20, 0.55, 1.0), Vector3(-0.32, 1.48, -0.1))
+		visual_root.add_child(_siren_bar_red)
+		visual_root.add_child(_siren_bar_blue)
 
-	var packed: PackedScene = custom_car_model
-	var model_scale: float = 1.06
-	var model_y_offset: float = 0.02
-	if packed == null:
-		var idx: int = clampi(int(vehicle_preset), 0, MODEL_PATHS.size() - 1)
-		packed = load(MODEL_PATHS[idx]) as PackedScene
-		if vehicle_preset == VehiclePreset.SUPERCAR_SU7 or vehicle_preset == VehiclePreset.GWAGON_LUXURY_SUV:
-			model_scale = 92.0
-			model_y_offset = 0.04
+	# Single optional headlight SpotLight3D (off by default, toggle with [L] when driving)
+	_headlight_spot = SpotLight3D.new()
+	_headlight_spot.position = Vector3(0.0, 0.72, 2.15)
+	_headlight_spot.rotation.y = PI
+	_headlight_spot.light_color = Color(1.0, 0.96, 0.88)
+	_headlight_spot.light_energy = 2.4
+	_headlight_spot.spot_range = 28.0
+	_headlight_spot.spot_angle = 38.0
+	_headlight_spot.visible = false
+	visual_root.add_child(_headlight_spot)
 
-	if packed != null:
-		var car_inst: Node3D = packed.instantiate() as Node3D
-		if car_inst != null:
-			car_inst.scale = Vector3(model_scale, model_scale, model_scale)
-			car_inst.position = Vector3(0.0, model_y_offset, 0.0)
-			visual_root.add_child(car_inst)
-			_discover_glb_wheels(car_inst)
-
-	# Police Siren Lights
-	if is_police or police_pursuit_ai:
-		_siren_red_light = OmniLight3D.new()
-		_siren_red_light.light_color = Color(1.0, 0.14, 0.14)
-		_siren_red_light.light_energy = 4.2
-		_siren_red_light.omni_range = 16.0
-		_siren_red_light.position = Vector3(0.35, 1.55, -0.1)
-		_siren_red_light.visible = false
-		visual_root.add_child(_siren_red_light)
-
-		_siren_blue_light = OmniLight3D.new()
-		_siren_blue_light.light_color = Color(0.18, 0.48, 1.0)
-		_siren_blue_light.light_energy = 4.2
-		_siren_blue_light.omni_range = 16.0
-		_siren_blue_light.position = Vector3(-0.35, 1.55, -0.1)
-		_siren_blue_light.visible = false
-		visual_root.add_child(_siren_blue_light)
-
-	# Headlight Beams
-	for side_x: float in [-0.66, 0.66]:
-		var spot := SpotLight3D.new()
-		spot.position = Vector3(side_x, 0.68, 2.15)
-		spot.rotation.y = PI
-		spot.light_color = Color(1.0, 0.96, 0.88)
-		spot.light_energy = 2.8
-		spot.spot_range = 32.0
-		spot.spot_angle = 34.0
-		visual_root.add_child(spot)
-		_headlights.append(spot)
-
-	# AI Traffic Obstacle RayCasts
-	_front_ray = _make_ray(Vector3(0.0, 0.65, 2.2), Vector3(0.0, 0.0, 8.5))
+	_front_ray = _make_ray(Vector3(0.0, 0.65, 2.15), Vector3(0.0, 0.0, 8.5))
 	_left_ray = _make_ray(Vector3(0.8, 0.65, 1.8), Vector3(5.0, 0.0, 5.0))
-	_right_ray = _make_ray(Vector3(-0.8, 0.65, 1.8), Vector3(-5.0, 0.0, 5.0))
 
-	# 360° Mouse Orbit Chase Camera Rig
 	_cam_pivot = Node3D.new()
 	_cam_pivot.set_meta("gta_internal", true)
 	_cam_pivot.position = Vector3(0.0, 1.48, 0.0)
@@ -519,8 +507,23 @@ func _rebuild_vehicle() -> void:
 	_camera = Camera3D.new()
 	_camera.fov = 66.0
 	_camera.near = 0.1
-	_camera.far = 900.0
+	_camera.far = 650.0
 	_spring_arm.add_child(_camera)
+
+
+func _make_siren_beacon(col: Color, pos: Vector3) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = 0.22
+	sm.height = 0.30
+	mi.mesh = sm
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = col
+	mi.material_override = mat
+	mi.position = pos
+	mi.visible = false
+	return mi
 
 
 func _make_ray(origin: Vector3, target_vec: Vector3) -> RayCast3D:
@@ -536,8 +539,8 @@ func _make_ray(origin: Vector3, target_vec: Vector3) -> RayCast3D:
 func _discover_glb_wheels(car_inst: Node3D) -> void:
 	for node: Node in car_inst.find_children("*", "Node3D", true, false):
 		var nm: String = node.name.to_lower()
-		if nm.ends_with("frontleftwheel") or nm.ends_with("frontrightwheel") or nm == "3dwheel front l" or nm == "3dwheel front r":
+		if nm.ends_with("frontleftwheel") or nm.ends_with("frontrightwheel") or nm.begins_with("wheel-front"):
 			_visual_front_wheels.append(node as Node3D)
 			_visual_all_wheels.append(node as Node3D)
-		elif nm.ends_with("backwheels") or nm == "3dwheel rear l" or nm == "3dwheel rear r":
+		elif nm.ends_with("backwheels") or nm.begins_with("wheel-back") or nm.begins_with("wheel."):
 			_visual_all_wheels.append(node as Node3D)

@@ -44,19 +44,19 @@ func _create_viewport_topbar() -> HBoxContainer:
 	bar.add_child(badge)
 
 	_add_quick_top_btn(bar, "+ Skyscraper", func() -> Node3D:
-		return _make_city_prop("Skyscraper", 3, randi() % 6, Vector3(14.0, 1.0, 14.0))
+		return _make_city_prop("Skyscraper", 0)
 	)
-	_add_quick_top_btn(bar, "+ Shop/Hotel", func() -> Node3D:
-		return _make_city_prop("DowntownBlock", 4, randi() % 5, Vector3(14.0, 1.0, 14.0))
+	_add_quick_top_btn(bar, "+ Glass Tower", func() -> Node3D:
+		return _make_city_prop("GlassTower", 1)
 	)
 	_add_quick_top_btn(bar, "+ Road", func() -> Node3D:
-		return _make_city_prop("RoadSegment", 1, 0, Vector3(14.0, 1.0, 42.0))
+		return _make_city_prop("RoadSegment", 9)
 	)
-	_add_quick_top_btn(bar, "+ SU7 Supercar", func() -> Node3D:
-		return _make_vehicle("PegassiSU7", 0, false, false)
+	_add_quick_top_btn(bar, "+ Zentorno Supercar", func() -> Node3D:
+		return _make_vehicle("PegassiZentorno", 6, false, false)
 	)
-	_add_quick_top_btn(bar, "+ G63 SUV", func() -> Node3D:
-		return _make_vehicle("BenefactorG63", 2, false, false)
+	_add_quick_top_btn(bar, "+ Luxury SUV", func() -> Node3D:
+		return _make_vehicle("GallivanterSUV", 2, false, false)
 	)
 	_add_quick_top_btn(bar, "+ Police", func() -> Node3D:
 		return _make_vehicle("LSPDCruiser", 1, false, true)
@@ -105,39 +105,42 @@ func _create_studio_dock() -> Control:
 
 	_add_section_header(main_vbox, "1. REAL 3D ARCHITECTURE")
 	_add_spawn_btn(main_vbox, "+ 6-Story Skyscraper", func() -> Node3D:
-		return _make_city_prop("Skyscraper", 3, 0, Vector3(14.0, 1.0, 14.0))
+		return _make_city_prop("Skyscraper", 0)
 	)
 	_add_spawn_btn(main_vbox, "+ Modern Glass Tower", func() -> Node3D:
-		return _make_city_prop("GlassTower", 3, 1, Vector3(14.0, 1.0, 14.0))
+		return _make_city_prop("GlassTower", 1)
 	)
-	_add_spawn_btn(main_vbox, "+ Downtown Commercial Block", func() -> Node3D:
-		return _make_city_prop("CommercialBlock", 4, 0, Vector3(14.0, 1.0, 14.0))
+	_add_spawn_btn(main_vbox, "+ Commercial Plaza Store", func() -> Node3D:
+		return _make_city_prop("CommercialPlaza", 4)
 	)
 	_add_spawn_btn(main_vbox, "+ Vinewood Hills Mansion", func() -> Node3D:
-		return _make_city_prop("VinewoodMansion", 4, 5, Vector3(14.0, 1.0, 14.0))
+		return _make_city_prop("VinewoodMansion", 6)
 	)
-	_add_spawn_btn(main_vbox, "+ PBR Asphalt Road", func() -> Node3D:
-		return _make_city_prop("AsphaltRoad", 1, 0, Vector3(14.0, 1.0, 42.0))
+	_add_spawn_btn(main_vbox, "+ Asphalt Road Strip", func() -> Node3D:
+		return _make_city_prop("AsphaltRoad", 9)
 	)
 	_add_spawn_btn(main_vbox, "+ 4-Way Zebra Intersection", func() -> Node3D:
-		return _make_city_prop("Intersection", 2, 0, Vector3(14.0, 1.0, 14.0))
+		return _make_city_prop("Intersection", 10)
 	)
 	_add_spawn_btn(main_vbox, "+ Bridge Stunt Ramp", func() -> Node3D:
-		return _make_city_prop("BridgeRamp", 5, 0, Vector3(6.0, 1.0, 10.0))
+		return _make_city_prop("BridgeRamp", 11)
 	)
-	_add_spawn_btn(main_vbox, "+ Double Highway Streetlight", func() -> Node3D:
-		return _make_city_prop("Streetlight", 6, 0, Vector3(1.0, 6.0, 1.0))
+	_add_spawn_btn(main_vbox, "+ Highway Streetlight", func() -> Node3D:
+		return _make_city_prop("Streetlight", 12)
 	)
 	_add_spawn_btn(main_vbox, "+ Lush City Tree", func() -> Node3D:
-		return _make_city_prop("CityTree", 7, randi() % 3, Vector3(1.0, 6.0, 1.0))
+		return _make_city_prop("CityTree", 14)
 	)
 
 	_add_section_header(main_vbox, "2. REAL 3D VEHICLES (.GLB)")
-	_add_spawn_btn(main_vbox, "+ Pegassi SU7 PBR Supercar", func() -> Node3D:
-		return _make_vehicle("PegassiSU7", 0, false, false)
+	_add_spawn_btn(main_vbox, "+ Pegassi Zentorno Supercar", func() -> Node3D:
+		return _make_vehicle("PegassiZentorno", 6, false, false)
 	)
-	_add_spawn_btn(main_vbox, "+ Benefactor G63 AMG SUV", func() -> Node3D:
-		return _make_vehicle("BenefactorG63", 2, false, false)
+	_add_spawn_btn(main_vbox, "+ Pegassi Infernus GT", func() -> Node3D:
+		return _make_vehicle("PegassiInfernus", 0, false, false)
+	)
+	_add_spawn_btn(main_vbox, "+ Gallivanter Luxury SUV", func() -> Node3D:
+		return _make_vehicle("GallivanterSUV", 2, false, false)
 	)
 	_add_spawn_btn(main_vbox, "+ LSPD Police Cruiser (AI)", func() -> Node3D:
 		return _make_vehicle("LSPDCruiser", 1, false, true)
@@ -160,11 +163,11 @@ func _create_studio_dock() -> Control:
 		return m
 	)
 
-	_add_section_header(main_vbox, "4. TIME & GRAPHICS PRESET")
+	_add_section_header(main_vbox, "4. TIME & WEATHER PRESET")
 	var mood_hbox := HBoxContainer.new()
 	main_vbox.add_child(mood_hbox)
-	_add_mood_btn(mood_hbox, "Sunny Day", 0)
-	_add_mood_btn(mood_hbox, "Sunset", 1)
+	_add_mood_btn(mood_hbox, "Sunset", 0)
+	_add_mood_btn(mood_hbox, "Sunny", 1)
 	_add_mood_btn(mood_hbox, "Night", 2)
 
 	return scroll
@@ -199,21 +202,19 @@ func _add_mood_btn(hbox: HBoxContainer, label_txt: String, preset_id: int) -> vo
 		var root: Node = EditorInterface.get_edited_scene_root()
 		if root == null:
 			return
-		for child: Node in root.find_children("*", "WorldEnvironment", true, false):
+		for child: Node in root.find_children("*", "*", true, false):
 			if child.get_script() == GTASkyScript:
-				child.set("mood_preset", preset_id)
+				child.set("weather_preset", preset_id)
 				return
 	)
 	hbox.add_child(btn)
 
 
-func _make_city_prop(base_name: String, ptype: int, var_idx: int, psize: Vector3) -> Node3D:
+func _make_city_prop(base_name: String, ptype: int) -> Node3D:
 	var prop := StaticBody3D.new()
 	prop.name = base_name
 	prop.set_script(CityPropScript)
 	prop.set("prop_type", ptype)
-	prop.set("variant_index", var_idx)
-	prop.set("prop_size", psize)
 	return prop
 
 
@@ -232,7 +233,7 @@ func _make_npc() -> Node3D:
 	var npc := CharacterBody3D.new()
 	npc.name = "PedestrianNPC"
 	npc.set_script(GTANPCScript)
-	npc.set("npc_skin", randi() % 4)
+	npc.set("outfit", randi() % 5)
 	return npc
 
 
@@ -268,9 +269,10 @@ func _compute_editor_camera_ground_point() -> Vector3:
 
 	var cam_pos: Vector3 = cam.global_position
 	var cam_dir: Vector3 = -cam.global_transform.basis.z.normalized()
-	var hit_pos: Vector3 = cam_pos + cam_dir * 20.0
-	if cam_dir.y < -0.08 and cam_pos.y > 0.0:
-		var t: float = clampf(-cam_pos.y / cam_dir.y, 6.0, 48.0)
-		hit_pos = cam_pos + cam_dir * t
+	if cam_dir.y < -0.05:
+		var t: float = clampf(-cam_pos.y / cam_dir.y, 2.0, 120.0)
+		var hit: Vector3 = cam_pos + cam_dir * t
+		return Vector3(snappedf(hit.x, 1.0), 0.0, snappedf(hit.z, 1.0))
 
-	return Vector3(snappedf(hit_pos.x, 1.0), 0.0, snappedf(hit_pos.z, 1.0))
+	var fallback: Vector3 = cam_pos + cam_dir * 14.0
+	return Vector3(snappedf(fallback.x, 1.0), 0.0, snappedf(fallback.z, 1.0))

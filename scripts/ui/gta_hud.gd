@@ -1,11 +1,74 @@
 extends CanvasLayer
 class_name GTAHUD
-## GTAHUD
-## Complete GTA V Main Menu + Pause Menu + Graphics/Mouse Settings + Gameplay HUD:
-## - Live 3D Orbiting Main Menu ("PLAY LOS SANTOS", "3D WORLD ENGINE", "SETTINGS", "QUIT")
-## - Pause Menu ([ESC]) with Supercar Delivery, Engine Mode & Graphics Presets
-## - Center Over-the-Shoulder Aim Crosshair (Right-Click)
-## - Live 3D Minimap Radar, Cash ($), Wanted Stars (★), Speedometer & Touch Controls
+## GTAHUD (Intel UHD Crash-Proof Optimized)
+## Complete GTA V Main Menu + Pause Menu + Graphics/Mouse Settings + Gameplay HUD
+## Uses a blazing-fast 2D Vector GPS Radar instead of a duplicate 3D SubViewport
+## so Intel UHD Graphics renders the 3D world only ONCE per frame!
+
+
+class GPSRadarControl extends Control:
+	var focus_pos: Vector3 = Vector3.ZERO
+	var focus_yaw: float = 0.0
+	var meters_to_px: float = 1.35
+
+	func _draw() -> void:
+		var sz: Vector2 = size
+		var center: Vector2 = sz * 0.5
+		draw_rect(Rect2(Vector2.ZERO, sz), Color(0.10, 0.12, 0.15, 0.96), true)
+
+		# Ocean & Beach south of Z = 88
+		var beach_y: float = center.y + (86.0 - focus_pos.z) * meters_to_px
+		if beach_y < sz.y:
+			var clamped_by: float = maxf(0.0, beach_y)
+			draw_rect(Rect2(0.0, clamped_by, sz.x, sz.y - clamped_by), Color(0.76, 0.68, 0.46, 0.85), true)
+		var ocean_y: float = center.y + (104.0 - focus_pos.z) * meters_to_px
+		if ocean_y < sz.y:
+			var clamped_oy: float = maxf(0.0, ocean_y)
+			draw_rect(Rect2(0.0, clamped_oy, sz.x, sz.y - clamped_oy), Color(0.10, 0.34, 0.58, 0.95), true)
+
+		# Los Santos Road Grid (X = -48, 0, 48 and Z = -48, 0, 48)
+		var road_col := Color(0.28, 0.31, 0.36, 0.95)
+		for rx: float in [-48.0, 0.0, 48.0]:
+			var px: float = center.x + (rx - focus_pos.x) * meters_to_px
+			if px >= -10.0 and px <= sz.x + 10.0:
+				draw_rect(Rect2(px - 5.0, 0.0, 10.0, minf(sz.y, beach_y)), road_col, true)
+		for rz: float in [-48.0, 0.0, 48.0]:
+			var py: float = center.y + (rz - focus_pos.z) * meters_to_px
+			if py >= -10.0 and py <= sz.y + 10.0:
+				draw_rect(Rect2(0.0, py - 5.0, sz.x, 10.0), road_col, true)
+
+		# Mission Yellow Blips
+		for mnode: Node in get_tree().get_nodes_in_group(&"missions"):
+			if mnode is Node3D:
+				var mp: Vector2 = _world_to_map((mnode as Node3D).global_position, center, sz)
+				draw_circle(mp, 5.5, Color(1.0, 0.84, 0.12))
+				draw_circle(mp, 2.5, Color(0.12, 0.10, 0.02))
+
+		# Vehicle Blips (Flashing Red/Blue for Police, Cyan for Cars)
+		var flash_red: bool = int(Time.get_ticks_msec() / 220) % 2 == 0
+		for vnode: Node in get_tree().get_nodes_in_group(&"vehicles"):
+			if vnode is Node3D and not bool(vnode.get("_is_player_driving")):
+				var vp: Vector2 = _world_to_map((vnode as Node3D).global_position, center, sz)
+				if bool(vnode.get("is_police_unit")):
+					draw_circle(vp, 4.2, Color(1.0, 0.22, 0.22) if flash_red else Color(0.25, 0.58, 1.0))
+				else:
+					draw_rect(Rect2(vp - Vector2(2.5, 2.5), Vector2(5.0, 5.0)), Color(0.68, 0.86, 0.96, 0.85), true)
+
+		# Player White Directional Arrow in Center
+		var fwd := Vector2(sin(focus_yaw), cos(focus_yaw)).normalized()
+		var right := Vector2(fwd.y, -fwd.x)
+		var pts := PackedVector2Array([
+			center + fwd * 7.5,
+			center - fwd * 5.0 + right * 5.0,
+			center - fwd * 2.5,
+			center - fwd * 5.0 - right * 5.0,
+		])
+		draw_colored_polygon(pts, Color(1.0, 1.0, 1.0))
+
+	func _world_to_map(wpos: Vector3, center: Vector2, sz: Vector2) -> Vector2:
+		var raw: Vector2 = center + Vector2((wpos.x - focus_pos.x) * meters_to_px, (wpos.z - focus_pos.z) * meters_to_px)
+		return Vector2(clampf(raw.x, 6.0, sz.x - 6.0), clampf(raw.y, 6.0, sz.y - 6.0))
+
 
 var _hud_root: Control = null
 var _main_menu_root: Control = null
@@ -28,8 +91,7 @@ var _nitro_bar: ProgressBar = null
 var _help_panel: PanelContainer = null
 var _quality_status_lbl: Label = null
 
-var _radar_subviewport: SubViewport = null
-var _radar_camera: Camera3D = null
+var _gps_radar: GPSRadarControl = null
 var _banner_timer: float = 0.0
 var _wanted_flash_t: float = 0.0
 var _current_stars: int = 0
@@ -42,7 +104,6 @@ func _ready() -> void:
 	_build_pause_menu()
 	_build_settings_modal()
 	call_deferred("_connect_game_manager")
-	call_deferred("_link_minimap_world")
 
 
 func _process(delta: float) -> void:
@@ -51,8 +112,11 @@ func _process(delta: float) -> void:
 		return
 
 	var target: Node3D = (gm.call("get_focus_target") as Node3D) if gm.has_method("get_focus_target") else null
-	if is_instance_valid(target) and _radar_camera != null:
-		_radar_camera.global_position = Vector3(target.global_position.x, 105.0, target.global_position.z)
+	if is_instance_valid(target) and _gps_radar != null and _hud_root != null and _hud_root.visible:
+		_gps_radar.focus_pos = target.global_position
+		var fwd: Vector3 = target.global_transform.basis.z
+		_gps_radar.focus_yaw = atan2(fwd.x, fwd.z)
+		_gps_radar.queue_redraw()
 
 	var active_car: Node3D = gm.get("active_vehicle") as Node3D
 	if is_instance_valid(active_car):
@@ -114,11 +178,6 @@ func _on_aiming_changed(is_aiming: bool, _wname: String) -> void:
 		_crosshair.visible = is_aiming
 
 
-func _link_minimap_world() -> void:
-	if _radar_subviewport != null and get_viewport() != null:
-		_radar_subviewport.world_3d = get_viewport().world_3d
-
-
 func _on_cash_changed(new_cash: int, _delta_amt: int) -> void:
 	if _cash_label != null:
 		_cash_label.text = "$" + _format_commas(new_cash)
@@ -161,9 +220,8 @@ func _build_main_menu() -> void:
 	_main_menu_root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(_main_menu_root)
 
-	# Sleek left gradient vignette backdrop
 	var side_shade := ColorRect.new()
-	side_shade.color = Color(0.03, 0.04, 0.07, 0.76)
+	side_shade.color = Color(0.03, 0.04, 0.07, 0.78)
 	side_shade.anchor_bottom = 1.0
 	side_shade.offset_right = 510.0
 	_main_menu_root.add_child(side_shade)
@@ -177,8 +235,8 @@ func _build_main_menu() -> void:
 	_main_menu_root.add_child(menu_vbox)
 
 	var tag_lbl := Label.new()
-	tag_lbl.text = "GODOT 4 OPEN-WORLD ENGINE"
-	tag_lbl.add_theme_font_size_override("font_size", 14)
+	tag_lbl.text = "GODOT 4 OPEN-WORLD ENGINE (INTEL UHD OPTIMIZED)"
+	tag_lbl.add_theme_font_size_override("font_size", 13)
 	tag_lbl.add_theme_color_override("font_color", Color(0.38, 0.96, 0.56))
 	menu_vbox.add_child(tag_lbl)
 
@@ -198,7 +256,7 @@ func _build_main_menu() -> void:
 	menu_vbox.add_child(sub_lbl)
 
 	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(0.0, 16.0)
+	spacer.custom_minimum_size = Vector2(0.0, 14.0)
 	menu_vbox.add_child(spacer)
 
 	_add_menu_button(menu_vbox, "▶  PLAY LOS SANTOS (FREE ROAM)", Color(0.22, 0.78, 0.42), func() -> void:
@@ -273,7 +331,7 @@ func _build_pause_menu() -> void:
 			gm.call("set_app_mode", 3)
 	)
 
-	_add_menu_button(vbox, "🏎  SPAWN PEGASSI SU7 SUPERCAR", Color(0.65, 0.42, 0.14), func() -> void:
+	_add_menu_button(vbox, "🏎  SPAWN PEGASSI ZENTORNO SUPERCAR", Color(0.65, 0.42, 0.14), func() -> void:
 		var gm: Node = get_node_or_null("/root/GameManager")
 		if gm != null:
 			gm.call("spawn_supercar_near_player")
@@ -316,16 +374,16 @@ func _build_settings_modal() -> void:
 	vbox.add_child(stitle)
 
 	_quality_status_lbl = Label.new()
-	_quality_status_lbl.text = "Graphics Quality: HIGH (SSAO + Reflections + Bloom)"
+	_quality_status_lbl.text = "Graphics Quality: HIGH (Shadows + Bloom + MSAA 2x)"
 	vbox.add_child(_quality_status_lbl)
 
 	var q_hbox := HBoxContainer.new()
 	q_hbox.add_theme_constant_override("separation", 8)
 	vbox.add_child(q_hbox)
 
-	_add_quality_btn(q_hbox, "Fast (Intel UHD)", 0, "FAST (60 FPS Intel UHD)")
-	_add_quality_btn(q_hbox, "High (Default)", 1, "HIGH (SSAO + Reflections + Bloom)")
-	_add_quality_btn(q_hbox, "Ultra Realism", 2, "ULTRA (SSR + SSAO + SSIL + MSAA 4x)")
+	_add_quality_btn(q_hbox, "Fast (60 FPS)", 0, "FAST (60 FPS Max Performance)")
+	_add_quality_btn(q_hbox, "High (Default)", 1, "HIGH (Shadows + Bloom + MSAA 2x)")
+	_add_quality_btn(q_hbox, "Ultra Crisp", 2, "ULTRA (Long Shadows + Vivid Glow + MSAA 4x)")
 
 	var sens_lbl := Label.new()
 	sens_lbl.text = "Mouse Camera Sensitivity:"
@@ -461,7 +519,7 @@ func _build_gameplay_hud() -> void:
 	_char_badge.text = "ACTIVE [1]: FRANKLIN   (1 / 2 / 3 Switch)"
 	top_right.add_child(_char_badge)
 
-	# 2. BOTTOM-LEFT: GTA 5 Rectangular Minimap Radar + Health/Armor Bars
+	# 2. BOTTOM-LEFT: GTA 5 Rectangular 2D Vector GPS Minimap + Health/Armor Bars
 	var radar_frame := PanelContainer.new()
 	radar_frame.anchor_top = 1.0
 	radar_frame.anchor_bottom = 1.0
@@ -476,28 +534,10 @@ func _build_gameplay_hud() -> void:
 	radar_vbox.add_theme_constant_override("separation", 4)
 	radar_frame.add_child(radar_vbox)
 
-	var sub_container := SubViewportContainer.new()
-	sub_container.stretch = true
-	sub_container.custom_minimum_size = Vector2(224.0, 148.0)
-	radar_vbox.add_child(sub_container)
-
-	_radar_subviewport = SubViewport.new()
-	_radar_subviewport.size = Vector2i(224, 148)
-	_radar_subviewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-	sub_container.add_child(_radar_subviewport)
-
-	_radar_camera = Camera3D.new()
-	_radar_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	_radar_camera.size = 115.0
-	_radar_camera.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
-	_radar_camera.position = Vector3(0.0, 105.0, 0.0)
-	_radar_subviewport.add_child(_radar_camera)
-
-	var blip := ColorRect.new()
-	blip.color = Color(0.25, 0.95, 1.0)
-	blip.size = Vector2(8.0, 8.0)
-	blip.position = Vector2(108.0, 70.0)
-	sub_container.add_child(blip)
+	_gps_radar = GPSRadarControl.new()
+	_gps_radar.clip_contents = true
+	_gps_radar.custom_minimum_size = Vector2(212.0, 142.0)
+	radar_vbox.add_child(_gps_radar)
 
 	var bars_hbox := HBoxContainer.new()
 	bars_hbox.add_theme_constant_override("separation", 4)

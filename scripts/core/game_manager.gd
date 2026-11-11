@@ -155,11 +155,9 @@ func apply_graphics_quality(level: int) -> void:
 				vp.msaa_3d = Viewport.MSAA_4X
 				vp.scaling_3d_scale = 1.0
 
-	var scene_root: Node = get_tree().current_scene
-	if scene_root != null:
-		for child: Node in scene_root.find_children("*", "WorldEnvironment", true, false):
-			if child.has_method("apply_quality_tier"):
-				child.call("apply_quality_tier", graphics_quality)
+	for sky_node: Node in get_tree().get_nodes_in_group(&"sky_environment"):
+		if sky_node.has_method("apply_quality_tier"):
+			sky_node.call("apply_quality_tier", graphics_quality)
 	graphics_quality_changed.emit(graphics_quality)
 
 
@@ -183,7 +181,13 @@ func spawn_supercar_near_player() -> void:
 	scene_root.add_child(inst)
 	var fwd: Vector3 = target.global_transform.basis.z.normalized()
 	inst.global_position = target.global_position + fwd * 4.5 + Vector3(0.0, 0.4, 0.0)
-	push_banner("PEGASSI SU7 DELIVERED", "Personal Supercar spawned nearby", Color(0.35, 0.85, 1.0))
+	push_banner("PEGASSI ZENTORNO DELIVERED", "Personal Supercar spawned nearby", Color(0.35, 0.85, 1.0))
+
+
+func complete_mission(title: String, cash_reward: int) -> void:
+	cash = max(0, cash + cash_reward)
+	cash_changed.emit(cash, cash_reward)
+	push_banner("MISSION PASSED!  +$" + str(cash_reward), title + " — RESPECT +", Color(1.0, 0.84, 0.18))
 
 
 func _ensure_menu_camera() -> void:
@@ -342,13 +346,12 @@ func switch_to_protagonist(slot_index: int) -> void:
 
 
 func _cycle_world_time() -> void:
-	var scene_root: Node = get_tree().current_scene
-	if scene_root == null:
-		return
-	for child: Node in scene_root.find_children("*", "WorldEnvironment", true, false):
-		if child.has_method("cycle_preset"):
-			var preset_label: String = String(child.call("cycle_preset"))
-			push_banner("LOS SANTOS WEATHER", preset_label, Color(1.0, 0.72, 0.35))
+	var weather_names: Array[String] = ["GOLDEN HOUR SUNSET", "SUNNY CALI NOON", "NEON DOWNTOWN NIGHT"]
+	for sky_node: Node in get_tree().get_nodes_in_group(&"sky_environment"):
+		if sky_node.has_method("set_weather"):
+			var next_idx: int = (int(sky_node.get("weather_preset")) + 1) % 3
+			sky_node.call("set_weather", next_idx)
+			push_banner("LOS SANTOS WEATHER", weather_names[next_idx], Color(1.0, 0.72, 0.35))
 			return
 
 

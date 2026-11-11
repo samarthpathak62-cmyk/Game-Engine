@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/vehicles/gta_vehicle.gd" id="1_veh"]
 
-[node name="BenefactorG63" type="VehicleBody3D"]
+[node name="GallivanterSUV" type="VehicleBody3D"]
 script = ExtResource("1_veh")
-vehicle_name = "Benefactor G63 AMG"
+vehicle_name = "Gallivanter Luxury SUV"
 vehicle_preset = 2

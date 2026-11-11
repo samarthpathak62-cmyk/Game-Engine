@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/vehicles/gta_vehicle.gd" id="1_veh"]
 
-[node name="PegassiSU7" type="VehicleBody3D"]
+[node name="PegassiZentorno" type="VehicleBody3D"]
 script = ExtResource("1_veh")
-vehicle_name = "Pegassi SU7 GT"
-vehicle_preset = 0
+vehicle_name = "Pegassi Zentorno"
+vehicle_preset = 6

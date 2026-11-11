@@ -1,12 +1,9 @@
 @tool
 extends CharacterBody3D
 class_name GTACharacter
-## GTACharacter
-## Real 3D Rigged & Skeletal-Animated GTA Protagonist Controller:
-## - Real .glb Human Characters (Franklin, Michael, Trevor, Tactical PBR)
-## - Immediate 360° Mouse Orbit Camera + Scroll Zoom
-## - GTA 5 Over-the-Shoulder Right-Click Aim + Left-Click Gun Shooting & Melee Punch
-## - Seamless Car Enter / Hijack ([F] / [E])
+## GTACharacter (Intel UHD Crash-Proof Optimized)
+## Real 3D Rigged & Skeletal-Animated GTA Protagonist Controller with static
+## PackedScene caching, safe @export setter guards, 360° Mouse Look & Aim/Shoot.
 
 enum CharacterSkin {
 	FRANKLIN_STREET = 0,
@@ -23,6 +20,7 @@ const SKIN_PATHS: Array[String] = [
 ]
 
 const RIFLE_MODEL_PATH: String = "res://assets/models/weapons/assault_rifle.glb"
+static var _char_cache: Dictionary = {}
 
 @export_group("Identity & 3D Character Skin")
 @export var character_name: String = "Franklin"
@@ -31,11 +29,13 @@ const RIFLE_MODEL_PATH: String = "res://assets/models/weapons/assault_rifle.glb"
 @export var character_skin: CharacterSkin = CharacterSkin.FRANKLIN_STREET:
 	set(value):
 		character_skin = value
-		_rebuild_character()
+		if is_node_ready():
+			_rebuild_character()
 @export var custom_character_model: PackedScene:
 	set(value):
 		custom_character_model = value
-		_rebuild_character()
+		if is_node_ready():
+			_rebuild_character()
 
 @export_group("Movement & Combat Sliders")
 @export_range(2.5, 10.0, 0.2) var walk_speed: float = 4.8
@@ -49,7 +49,6 @@ var _spring_arm: SpringArm3D = null
 var _camera: Camera3D = null
 var _anim_player: AnimationPlayer = null
 var _weapon_visual: Node3D = null
-var _muzzle_light: OmniLight3D = null
 
 var _anim_idle: StringName = &""
 var _anim_walk: StringName = &""
@@ -131,7 +130,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not _is_gameplay_active():
 		return
 
-	# Ensure mouse is captured on click if window lost focus
 	if event is InputEventMouseButton and event.pressed:
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -140,7 +138,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			_desired_cam_dist = clampf(_desired_cam_dist + 0.45, 2.1, 6.8)
 
-	# Full 360° GTA 5 Mouse Camera Orbit (X Yaw + Y Pitch)
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var sens: float = _get_mouse_sens() * (0.65 if _is_aiming else 1.0)
 		if _cam_yaw != null:
@@ -174,8 +171,6 @@ func _physics_process(delta: float) -> void:
 		_fire_cooldown -= delta
 	if _action_lock_timer > 0.0:
 		_action_lock_timer -= delta
-	if _muzzle_light != null and _muzzle_light.visible and _fire_cooldown < 0.06:
-		_muzzle_light.visible = false
 
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
@@ -187,7 +182,6 @@ func _physics_process(delta: float) -> void:
 		_play_anim(_anim_idle, 0.2)
 		return
 
-	# Right-Mouse-Button Over-The-Shoulder Aim
 	var want_aim: bool = Input.is_action_pressed(&"aim_weapon")
 	if want_aim != _is_aiming:
 		_is_aiming = want_aim
@@ -197,7 +191,6 @@ func _physics_process(delta: float) -> void:
 		if gm != null and gm.has_method("notify_aiming"):
 			gm.call("notify_aiming", _is_aiming, "CARBINE RIFLE")
 
-	# Left-Mouse-Button Shoot or Punch
 	if Input.is_action_pressed(&"fire_weapon") and _fire_cooldown <= 0.0 and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		if _is_aiming or _weapon_equipped:
 			_fire_rifle()
@@ -228,7 +221,6 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0.0, 26.0 * delta)
 		velocity.z = move_toward(velocity.z, 0.0, 26.0 * delta)
 
-	# Character facing direction: face aim crosshair when aiming, otherwise face movement!
 	if _visual_pivot != null:
 		if _is_aiming:
 			var aim_yaw: float = atan2(forward_dir.x, forward_dir.z)
@@ -239,7 +231,6 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-	# Smooth Camera Shoulder Zoom & FOV
 	if _spring_arm != null and _camera != null:
 		var target_len: float = 1.95 if _is_aiming else _desired_cam_dist
 		var target_side: float = 0.52 if _is_aiming else 0.22
@@ -261,10 +252,7 @@ func _fire_rifle() -> void:
 
 	if _weapon_visual != null:
 		_weapon_visual.visible = true
-	if _muzzle_light != null:
-		_muzzle_light.visible = true
 
-	# Face shot direction immediately
 	if _cam_yaw != null and _visual_pivot != null:
 		var fwd: Vector3 = -_cam_yaw.global_transform.basis.z
 		_visual_pivot.rotation.y = atan2(fwd.x, fwd.z)
@@ -404,6 +392,15 @@ func _try_enter_nearest_vehicle() -> void:
 		_nearest_vehicle.call("enter_driver", self)
 
 
+static func _get_cached_scene(res_path: String) -> PackedScene:
+	if _char_cache.has(res_path):
+		return _char_cache[res_path] as PackedScene
+	var loaded: PackedScene = load(res_path) as PackedScene
+	if loaded != null:
+		_char_cache[res_path] = loaded
+	return loaded
+
+
 func _rebuild_character() -> void:
 	for child: Node in get_children(true):
 		if child.get_meta("gta_internal", false):
@@ -411,15 +408,6 @@ func _rebuild_character() -> void:
 
 	_anim_player = null
 	_current_anim = &""
-
-	var col := CollisionShape3D.new()
-	col.set_meta("gta_internal", true)
-	var cap := CapsuleShape3D.new()
-	cap.radius = 0.36
-	cap.height = 1.82
-	col.shape = cap
-	col.position = Vector3(0.0, 0.91, 0.0)
-	add_child(col, false, Node.INTERNAL_MODE_BACK)
 
 	_rig_root = Node3D.new()
 	_rig_root.set_meta("gta_internal", true)
@@ -432,7 +420,7 @@ func _rebuild_character() -> void:
 	var flip_z: bool = false
 	if packed == null:
 		var idx: int = clampi(int(character_skin), 0, SKIN_PATHS.size() - 1)
-		packed = load(SKIN_PATHS[idx]) as PackedScene
+		packed = _get_cached_scene(SKIN_PATHS[idx])
 		flip_z = (character_skin == CharacterSkin.TACTICAL_PBR)
 
 	if packed != null:
@@ -441,14 +429,27 @@ func _rebuild_character() -> void:
 			if flip_z:
 				model_inst.rotation.y = PI
 			_visual_pivot.add_child(model_inst)
-			_bind_character_animations(model_inst)
+			if not Engine.is_editor_hint():
+				_bind_character_animations(model_inst)
 
-	# 3D Assault Rifle attached to character right side
+	# In Editor mode, skip physics RIDs & runtime camera rigs!
+	if Engine.is_editor_hint():
+		return
+
+	var col := CollisionShape3D.new()
+	col.set_meta("gta_internal", true)
+	var cap := CapsuleShape3D.new()
+	cap.radius = 0.36
+	cap.height = 1.82
+	col.shape = cap
+	col.position = Vector3(0.0, 0.91, 0.0)
+	add_child(col, false, Node.INTERNAL_MODE_BACK)
+
 	_weapon_visual = Node3D.new()
 	_weapon_visual.position = Vector3(-0.24, 1.12, 0.34)
 	_visual_pivot.add_child(_weapon_visual)
 
-	var rifle_packed: PackedScene = load(RIFLE_MODEL_PATH) as PackedScene
+	var rifle_packed: PackedScene = _get_cached_scene(RIFLE_MODEL_PATH)
 	if rifle_packed != null:
 		var rifle_inst: Node3D = rifle_packed.instantiate() as Node3D
 		if rifle_inst != null:
@@ -456,15 +457,6 @@ func _rebuild_character() -> void:
 			rifle_inst.rotation_degrees = Vector3(0.0, 90.0, 0.0)
 			_weapon_visual.add_child(rifle_inst)
 
-	_muzzle_light = OmniLight3D.new()
-	_muzzle_light.light_color = Color(1.0, 0.78, 0.32)
-	_muzzle_light.light_energy = 3.5
-	_muzzle_light.omni_range = 6.5
-	_muzzle_light.position = Vector3(0.0, 0.05, 0.55)
-	_muzzle_light.visible = false
-	_weapon_visual.add_child(_muzzle_light)
-
-	# 3rd-Person GTA 5 Camera Rig with Shoulder Offset
 	_cam_yaw = Node3D.new()
 	_cam_yaw.position = Vector3(0.0, 1.56, 0.0)
 	_cam_yaw.rotation.y = PI
@@ -481,7 +473,7 @@ func _rebuild_character() -> void:
 	_camera = Camera3D.new()
 	_camera.fov = 65.0
 	_camera.near = 0.1
-	_camera.far = 900.0
+	_camera.far = 650.0
 	_spring_arm.add_child(_camera)
 
 

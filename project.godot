@@ -6,9 +6,9 @@ config_version=5
 [application]
 
 config/name="GTA Studio - Open World Engine"
-config/description="No-Code GTA 5 Style Open-World Engine Base & Visual City Builder built on Godot 4."
+config/description="No-Code GTA 5 Style Open-World 3D Engine & Los Santos Sandbox built on Godot 4."
 run/main_scene="res://scenes/main_city.tscn"
-config/features=PackedStringArray("4.3")
+config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -40,7 +40,9 @@ common/physics_ticks_per_second=60
 
 [rendering]
 
-lights_and_shadows/directional_shadow/size=4096
-lights_and_shadows/directional_shadow/soft_shadow_filter_quality=2
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+lights_and_shadows/directional_shadow/size=2048
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=1
 anti_aliasing/quality/msaa_3d=1
-environment/defaults/default_clear_color=Color(0.12, 0.14, 0.2, 1)
+environment/defaults/default_clear_color=Color(0.14, 0.2, 0.32, 1)
